@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:islami_application/modules/quraan/quran_view.dart';
+import 'package:islami_application/modules/hadeth/hadeth_view.dart';
 
-class QuranDetails extends StatefulWidget {
-  QuranDetails({super.key});
+class HadethDetails extends StatefulWidget {
+  HadethDetails({super.key});
 
-  static String routeName = 'Quran-details';
+  static String routeName = 'Hadeth-details';
 
   @override
-  State<QuranDetails> createState() => _QuranDetailsState();
+  State<HadethDetails> createState() => _QuranDetailsState();
 }
 
-class _QuranDetailsState extends State<QuranDetails> {
+class _QuranDetailsState extends State<HadethDetails> {
   String content = "";
   List<String> allVerses = [];
 
   @override
   Widget build(BuildContext context) {
-    var args = ModalRoute.of(context)?.settings.arguments as SuraDetails;
+    var args = ModalRoute.of(context)?.settings.arguments as HadethContent;
     var theme = Theme.of(context);
-    if (content.isEmpty) readFiles(args.suraNumber);
+
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -40,18 +39,9 @@ class _QuranDetailsState extends State<QuranDetails> {
           ),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    args.suraName,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Icon(Icons.play_circle),
-                ],
+              Text(
+                args.title,
+                style: theme.textTheme.bodyLarge,
               ),
               Divider(
                 thickness: 1,
@@ -60,13 +50,10 @@ class _QuranDetailsState extends State<QuranDetails> {
                 height: 5,
                 color: theme.primaryColor,
               ),
-              SizedBox(
-                height: 15,
-              ),
               Expanded(
                 child: ListView.builder(
                   itemBuilder: (context, index) => Text(
-                    content,
+                    args.content,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall,
                   ),
@@ -78,14 +65,5 @@ class _QuranDetailsState extends State<QuranDetails> {
         ),
       ),
     );
-  }
-
-  readFiles(String index) async {
-    String text = await rootBundle.loadString("assets/files/$index.txt");
-    content = text;
-    setState(() {
-      allVerses = content.split('\n');
-    });
-    print(text);
   }
 }

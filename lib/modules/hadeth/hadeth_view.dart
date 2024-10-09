@@ -1,14 +1,19 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:islami_application/modules/hadeth/hadeth_details.dart';
 
-class HadethView extends StatelessWidget {
+class HadethView extends StatefulWidget {
   HadethView({super.key});
 
   @override
+  State<HadethView> createState() => _HadethViewState();
+}
+
+class _HadethViewState extends State<HadethView> {
+  List<HadethContent> allHadethContent = [];
+  @override
   Widget build(BuildContext context) {
+    if (allHadethContent.isEmpty) readfile();
     var theme = Theme.of(context);
     return Scaffold(
       body: Column(
@@ -34,17 +39,29 @@ class HadethView extends StatelessWidget {
           ),
           Expanded(
             child: ListView.separated(
-              itemBuilder: (context, index) => Text(
-                "dd",
-                textAlign: TextAlign.center,
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    HadethDetails.routeName,
+                    arguments: HadethContent(
+                        title: allHadethContent[index].title,
+                        content: allHadethContent[index].content),
+                  );
+                },
+                child: Text(
+                  allHadethContent[index].title,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
-              itemCount: 8,
+              itemCount: allHadethContent.length,
               separatorBuilder: (context, index) => Divider(
-                thickness: 2.1,
-                indent: 10,
-                endIndent: 10,
-                height: 5,
+                thickness: 1.2,
+                indent: 40,
+                endIndent: 40,
                 color: theme.primaryColor,
+                height: 10,
               ),
             ),
           )
@@ -52,4 +69,28 @@ class HadethView extends StatelessWidget {
       ),
     );
   }
+
+  readfile() async {
+    String text = await rootBundle.loadString("assets/files/ahadeth.txt");
+    List<String> allHadeth = text.split("#");
+    for (int i = 0; i < allHadeth.length; i++) {
+      String singleHadeth = allHadeth[i].trim();
+      int indexOfFirstLine = singleHadeth.indexOf("\n");
+      String title = singleHadeth.substring(0, indexOfFirstLine);
+      String content = singleHadeth.substring(indexOfFirstLine + 1);
+      HadethContent hadethContent =
+          HadethContent(title: title, content: content);
+
+      allHadethContent.add(hadethContent);
+      setState(() {});
+      print(title);
+    }
+  }
+}
+
+class HadethContent {
+  final String title;
+  final String content;
+
+  HadethContent({required this.title, required this.content});
 }
